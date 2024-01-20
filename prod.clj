@@ -9,13 +9,14 @@
   '[cljs.build.api :as api]
   '[clojure.java.io :as io]
   '[clojure.string :as str]
-  '[leiningen.core.project :as p :refer [defproject]]
-  '[leiningen.clean :refer [clean]]
-  '[leiningen.uberjar :refer [uberjar]])
+  ;'[leiningen.core.project :as p :refer [defproject]]
+  ;'[leiningen.clean :refer [clean]]
+  ;'[leiningen.uberjar :refer [uberjar]]
+  )
 
-(defn read-project-clj []
-  (p/ensure-dynamic-classloader)
-  (-> "project.clj" load-file var-get))
+;(defn read-project-clj []
+;  (p/ensure-dynamic-classloader)
+;  (-> "project.clj" load-file var-get))
 
 (defn read-deps-edn [aliases-to-include]
   (let [{:keys [paths deps aliases]} (-> "deps.edn" slurp clojure.edn/read-string)
@@ -66,7 +67,8 @@
     (println "Build complete:" out-file)
     (System/exit 0)))
 
-(defmethod task "uberjar"
+;; TODO: build uberjar without lein
+#_(defmethod task "uberjar"
   [_]
   (let [project (-> (read-project-clj)
                     (merge (read-deps-edn []))

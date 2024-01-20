@@ -4,8 +4,7 @@
             [play-cljc.gl.core :as c]
             [play-cljc.gl.entities-2d :as e]
             [play-cljc.transforms :as t]
-            #?(:clj  [play-cljc.macros-java :refer [gl math]]
-               :cljs [play-cljc.macros-js :refer-macros [gl math]])))
+            [play-cljc.macros-java :refer [gl math]]))
 
 (defonce *state (atom {:mouse-x 0
                        :mouse-y 0

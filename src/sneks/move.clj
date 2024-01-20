@@ -1,7 +1,6 @@
 (ns sneks.move
   (:require [sneks.utils :as utils]
-            #?(:clj  [play-cljc.macros-java :refer [gl math]]
-               :cljs [play-cljc.macros-js :refer-macros [gl math]])))
+            [play-cljc.macros-java :refer [gl math]]))
 
 (def ^:const damping 0.1)
 (def ^:const max-velocity 1000)

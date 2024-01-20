@@ -1,4 +1,4 @@
-(ns sneks.start-dev
+(ns user
   (:require [sneks.start :as start]
             [sneks.core :as c]
             [clojure.spec.test.alpha :as st]
@@ -12,7 +12,3 @@
   (let [window (start/->window)
         game (pc/->game (:handle window))]
     (start/start game window)))
-
-(defn -main []
-  (start))
-

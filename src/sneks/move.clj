@@ -2,12 +2,20 @@
   (:require [sneks.utils :as utils]
             [play-cljc.macros-java :refer [gl math]]))
 
-(def ^:const damping 0.1)
-(def ^:const max-velocity 1000)
-(def ^:const max-jump-velocity (* max-velocity 8))
-(def ^:const deceleration 0.7)
-(def ^:const gravity 500)
-(def ^:const animation-secs 0.2)
+; TODO: macro that injects ^:const in prod
+;(def ^:const damping 0.1)
+;(def ^:const max-velocity 1000)
+;(def ^:const max-jump-velocity (* max-velocity 8))
+;(def ^:const deceleration 0.7)
+;(def ^:const gravity 500)
+;(def ^:const animation-secs 0.2)
+
+(def damping 0.1)
+(def max-velocity 1000)
+(def max-jump-velocity (* max-velocity 8))
+(def deceleration 0.7)
+(def gravity 500)
+(def animation-secs 0.2)
 
 (defn decelerate
   [velocity]

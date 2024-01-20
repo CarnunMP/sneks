@@ -21,8 +21,11 @@
 
 (defn init [game]
   ;; allow transparency in images
+  #_{:clj-kondo/ignore [:unresolved-symbol]}
   (gl game enable (gl game BLEND))
+  #_{:clj-kondo/ignore [:unresolved-symbol]}
   (gl game blendFunc (gl game SRC_ALPHA) (gl game ONE_MINUS_SRC_ALPHA))
+
   ;; load images and put them in the state atom
   (doseq [[k path] {:walk1 "player_walk1.png"
                     :walk2 "player_walk2.png"

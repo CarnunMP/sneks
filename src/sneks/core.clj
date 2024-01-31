@@ -5,8 +5,11 @@
     [play-cljc.gl.entities-2d :as e]
     [play-cljc.macros-java :refer [gl]]
     [play-cljc.transforms :as t]
+    [sneks.levels.levels :as levels]
     [sneks.move :as move]
     [sneks.utils :as utils]
+    [sneks.utils.cells :as uc]
+    [sneks.utils.sneks :as us]
     [sneks.utils.vectors :as uv]))
 
 (defonce *state (atom {:mouse-x 0
@@ -97,56 +100,6 @@
 
 ;; ---
 
-; layer one:
-; - floor [nil]
-; - goal(s) [\A, \B, etc.]
-
-; layer two:
-; - snake head [a0, b0, etc.]
-; - snake tail [a1 a2 a3, etc.]
-; - snack [s0, s1, etc.]
-; - wall [\#]
-
-; layer three:
-; - ???
-
-(def level-0
-  {:layer/zero [[\. \. \. \. \.]
-                [\. \. \. \. \.]
-                [\. \. \. \. \A]
-                [\. \. \. \. \.]
-                [\. \. \. \. \.]]
-   :layer/one [[\. \. \. \. \.]
-               ["a0" \. \. \. \.]
-               ["a1" \. \. \. \.]
-               ["a2" \. \. \. \.]
-               [\. \. \. \. \.]]})
-
-(def level* (atom nil))
-
-; --- utils ---
-
-(def empty-cell? (partial = \.))
-(def sname-set #{\a \b \c})
-
-(defn snek-cell?
-  "Returns true if cell contains a snek (snegment), else false."
-  [cell]
-  (and (string? cell)
-       (sname-set (first cell))))
-
-(defn this-snek-cell?
-  "Returns true if cell contains a snegment of *this* snek."
-  [sname cell]
-  (and (string? cell)
-       (= sname (first cell))))
-
-(defn snek-cell->sneg-num
-  "Returns the number of the snegment."
-  [cell]
-  {:pre [(snek-cell? cell)]}
-  (parse-long (subs cell 1)))
-
 (defn read-sneks
   "Returns snek maps for the layer."
   [layer-one]
@@ -163,42 +116,30 @@
         sneks
 
         ;; assoc coord of snegment into sneks map
-        (snek-cell? cell)
-        (recur (inc x) y (assoc-in sneks [(first cell) (snek-cell->sneg-num cell)] [x y]))
+        (uc/snek-cell? cell)
+        (recur (inc x) y (assoc-in sneks [(first cell) (uc/snek-cell->sneg-num cell)] [x y]))
 
         ;; next cell
         :else
         (recur (inc x) y sneks)))))
 
+;; TODO: move?
 (defn load-level!
   "Loads the level into the level* atom."
   [level]
   (->> (assoc level :sneks (read-sneks (:layer/one level)))
-       (reset! level*)))
+       (reset! levels/level*)))
 
-(defn get-cell [layer [x y]]
-  (get-in @level* [layer y x]))
-
-(defn get-snek [sname]
-  (get-in @level* [:sneks sname]))
-
-(defn get-head [sname]
-  (get (get-snek sname) 0))
-
-(def dir->x+y
-  {:n [0 -1]
-   :s [0 1]
-   :e [1 0]
-   :w [-1 0]})
-
+;; TODO: move?
 (defn new-head
   "If the snamed snek can move in the given dir, returns its new head coord. Else nil."
   [sname dir]
-  (let [adj-coord (uv/add (get-head sname) (dir->x+y dir))
-        adj-cell (get-cell :layer/one adj-coord)]
-    (when (empty-cell? adj-cell)
+  (let [adj-coord (uv/add (us/get-head sname) (uv/dir->x+y dir))
+        adj-cell (uc/get-cell :layer/one adj-coord)]
+    (when (uc/empty-cell? adj-cell)
       adj-coord)))
 
+;; TODO: move?
 (defn move-snek!
   "Moves the snamed snek in the given dir(ection) if it can move, returning the new value of level*. Else nil."
   [sname dir]
@@ -206,8 +147,8 @@
 
   ;; only move if _can_ move
   (when-let [new-head (new-head sname dir)]
-    (let [level @level*
-          snek (get-snek sname)
+    (let [level @levels/level*
+          snek (us/get-snek sname)
           snek' (merge {0 new-head}
                        ;; for the rest of the body, move snegments along
                        (reduce (fn [m i]
@@ -221,7 +162,7 @@
                                      ;; new snegment number for this cell -> write snegment
                                      sneg-num' (str sname sneg-num')
                                      ;; was a snek cell -> now empty
-                                     (this-snek-cell? sname cell) \.
+                                     (uc/this-snek-cell? sname cell) \.
                                      ;; otherwise, no change
                                      :else cell)]
                          (cond
@@ -237,7 +178,7 @@
                            :else
                            (recur (inc x) y (assoc-in layer [y x] cell')))))]
 
-      (reset! level*
+      (reset! levels/level*
               (-> level
                   (assoc :layer/one layer-one')
                   (assoc-in [:sneks sname] snek'))))))
@@ -245,7 +186,7 @@
 (comment
   (require '[clojure.pprint :refer [pprint]])
 
-  (pprint @level*)
-  (pprint (load-level! level-0))
-  (pprint (move-snek! \a :s))
+  (pprint @levels/level*)
+  (pprint (load-level! levels/level-0))
+  (pprint (move-snek! \a :e))
   )

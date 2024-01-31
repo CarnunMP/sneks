@@ -12,3 +12,7 @@
   (let [window (start/->window)
         game (pc/->game (:handle window))]
     (start/start game window)))
+
+(comment
+  (start)
+  )

@@ -1,4 +1,6 @@
-(ns sneks.levels.levels)
+(ns sneks.levels.levels
+  (:require
+    [sneks.utils.sneks :as us]))
 
 ; layer one:
 ; - floor [nil]
@@ -27,3 +29,9 @@
                [\. \. \. \. \.]]})
 
 (def level* (atom nil))
+
+(defn load-level!
+  "Loads the level into the level* atom."
+  [level]
+  (->> (assoc level :sneks (us/read-sneks (:layer/one level)))
+       (reset! level*)))

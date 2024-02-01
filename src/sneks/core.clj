@@ -101,6 +101,6 @@
   (require '[clojure.pprint :refer [pprint]])
 
   (pprint @levels/level*)
-  (pprint (levels/load-level! l/level-0))
+  (pprint (levels/load-level! levels/level-0))
   (pprint (logic/move-snek! \a :e))
   )
